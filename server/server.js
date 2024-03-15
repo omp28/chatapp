@@ -15,11 +15,14 @@ io.on("connection", (socket) => {
   // broadcast socket id to all the users
   socket.broadcast.emit("userName", socket.id);
 
-  socket.on("chat", (payload) => {
-    const { message, userName } = payload;
-    console.log("what is payload", payload);
+  socket.on("joinRoom", (roomName) => {
+    socket.join(roomName);
+    console.log(`${socket.id} joined room: ${roomName}`);
+  });
 
-    io.to(userName).emit("chat", payload);
+  socket.on("chat", (payload) => {
+    const { message, userName, roomName } = payload;
+    io.to(roomName).emit("chat", payload);
   });
 
   // handle user disconnect

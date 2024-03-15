@@ -13,6 +13,7 @@ function App() {
   const [userName, setUserName] = useState("");
   const [userjoined, setUserJoined] = useState([]);
   const [userLeft, setUserLeft] = useState([]);
+  const [roomName, setRoomName] = useState("");
   const sendUser = (e) => {
     e.preventDefault();
     socket.emit("user", {
@@ -22,7 +23,7 @@ function App() {
 
   const sendChat = (e) => {
     e.preventDefault();
-    socket.emit("chat", { message, userName });
+    socket.emit("chat", { message, userName, roomName });
     setMessage("");
   };
   useEffect(() => {
@@ -69,6 +70,21 @@ function App() {
         );
       })}
       <form onSubmit={sendChat}>
+        <input
+          className="m-4 border-2 border-gray-300"
+          type="text"
+          name="roomName"
+          value={roomName}
+          placeholder="Enter room name"
+          onChange={(e) => setRoomName(e.target.value)}
+        />
+        <button
+          className="w-20 border-2 m-4 border-gray-300"
+          onClick={() => socket.emit("joinRoom", roomName)}
+        >
+          Join Room
+        </button>
+
         <input
           className=" m-4 border-2 border-gray-300"
           type="text"
