@@ -11,7 +11,8 @@ function App() {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);
   const [userName, setUserName] = useState("");
-  // const userName = nanoid(5);
+  const [userjoined, setUserJoined] = useState([]);
+  const [userLeft, setUserLeft] = useState([]);
   const sendUser = (e) => {
     e.preventDefault();
     socket.emit("user", {
@@ -28,11 +29,35 @@ function App() {
     socket.on("chat", (payload) => {
       setChat([...chat, payload]);
     });
-  });
+
+    socket.on("userName", (payload) => {
+      // console.log("what is payload", payload);
+      setUserJoined([...userjoined, payload]);
+    });
+
+    socket.on("disconnectd user", (payload) => {
+      setUserLeft([...userLeft, payload]);
+    });
+  }, [chat, userjoined, userLeft]);
 
   return (
     <div className="App">
       <h1>Chat App</h1>
+      <div>
+        <h2>Users Joined:</h2>
+        <ul>
+          {userjoined.map((user, index) => (
+            <li key={index}>{user}</li>
+          ))}
+        </ul>
+        <br />
+        <h2>Users Left:</h2>
+        <ul>
+          {userLeft.map((user, index) => (
+            <li key={index}>{user}</li>
+          ))}
+        </ul>
+      </div>
       {chat.map((payload, index) => {
         return (
           <div className="flex justify-center items-center" key={index}>
@@ -59,20 +84,17 @@ function App() {
           Send
         </button>
       </form>
-      <form onSubmit={sendUser}>
+      <form onSubmit={sendChat}>
         <input
           className=" m-4 border-2 border-gray-300"
           type="text"
           name="userName"
           value={userName}
-          placeholder="user name"
+          placeholder="Enter your name"
           onChange={(e) => {
             setUserName(e.target.value);
           }}
         />
-        <button className=" w-20 border-2 m-4 border-gray-300" type="submit">
-          Set
-        </button>
       </form>
     </div>
   );

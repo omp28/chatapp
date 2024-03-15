@@ -1,10 +1,6 @@
-// check data base adapter for saving the data to the database
-
 const express = require("express");
 const app = express();
-
 const server = require("http").createServer(app);
-
 const io = require("socket.io")(server, {
   // options go here
   cors: {
@@ -14,22 +10,23 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  //   console.log("what is socket", socket);
-  //   console.log("active to be connected");
+  console.log("ID: ", socket.id);
+
+  // broadcast socket id to all the users
+  socket.broadcast.emit("userName", socket.id);
+
   socket.on("chat", (payload) => {
     console.log("what is payload", payload);
-
     io.emit("chat", payload);
   });
-  socket.on("user", (payload) => {
-    console.log("what is payload of user", payload);
-    io.emit("user", payload);
+
+  // handle user disconnect
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+    console.log("ID: ", socket.id);
+    socket.broadcast.emit("disconnectd user", `om patel,${socket.id}`);
   });
 });
-
-// app.listen(3000, () => {
-//   console.log("server is running on port 3000");
-// }
 
 server.listen(3000, () => {
   console.log("server is running on port 3000...");
