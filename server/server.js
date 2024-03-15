@@ -16,8 +16,10 @@ io.on("connection", (socket) => {
   socket.broadcast.emit("userName", socket.id);
 
   socket.on("chat", (payload) => {
+    const { message, userName } = payload;
     console.log("what is payload", payload);
-    io.emit("chat", payload);
+
+    io.to(userName).emit("chat", payload);
   });
 
   // handle user disconnect
